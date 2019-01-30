@@ -14,18 +14,11 @@
 <body>
     <main>
         <div id="app">
-            <nav>
-                    <router-link :to="{ path: '/'}" class="link">Home</router-link>
-                    <router-link :to="{ path: '/users'}">Users</router-link>
-                    <a href="#/contact">Contact</a>
-                </ul>
-                <!--<router-link :to="{ path: '/'}" class="link">Home</router-link>
-                        here's another way to do the routing-->
-            </nav>
+            <router-link v-if="authenticated" to="/login" v-on:click.native="logout()">Log Out</router-link>
             <!-- the router view element is where the components get rendered
             when changing the address bar (the route) -->
             <transition name="fade" mode="out-in">
-                <router-view></router-view>
+                <router-view @authenticated="setAuthenticated"/>
             </transition>
         </div>
     </main>
@@ -40,6 +33,6 @@
             </h3>
         </div>
     </template>
-    <script src="js/main2.js"></script>
+    <script type="module" src="js/main2.js"></script>
 </body>
 </html>

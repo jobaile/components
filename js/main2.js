@@ -1,56 +1,15 @@
-(() => {
-//components will go here
-const HomePageComponent = {
-    template: "<h2>You're on the home page</h2>" 
-};
-
-const UsersPageComponent = {
-    //template: "<h2>You're on the users page</h2>"
-    props: ['id'],
-    template: "#userList",
-
-    //this always needs to be a function in a component
-    data: function(){
-        return {
-            users: []
-        }
-    },
-
-    created: function(){
-        console.log('user component created!');
-
-        this.fetchUserData(this.id);
-    },
-
-    methods: {
-        fetchUserData(user){
-            debugger;
-
-            let url = `./includes/index.php?user=${user}`;
-
-            fetch(url)
-                .then(res => res.json())
-                .then(data => this.users = data)
-            .catch(function(error){
-                console.error(error);
-            });
-        }
-    }
-};
-
-const ContactPageComponent = {
-    template: "<h2>You're on the contact page</h2>"
-};
-
-const ErrorPageComponent = {
-    template: "<h2>Page Not Found! Please try again.</h2>" 
-};
+    //components will go here
+    import LoginComponent from './components/LoginComponent.js'; //this is like doing a php include
+    import UserComponent from './components/UserComponent.js'; //this is like doing a php include
 
 const routes = [
-    { path: '/', name: 'home', component: HomePageComponent },
-    { path: '/users/:id', name: 'users', component: UsersPageComponent, props: true },
-    { path: '/contact', name: 'contact', component: ContactPageComponent},
-    { path: '/*', name: 'error', component: ErrorPageComponent}
+     { path: '/', redirect: { name: 'login' } },
+     { path: '/login', name: 'login', component: LoginComponent },
+     { path: '/users', name: 'users', component: UserComponent } //naming convention should be the same
+     //{ path: '/', name: 'home', component: HomePageComponent },
+    //  { path: '/users/:id', name: 'users', component: UsersPageComponent, props: true },
+    //  { path: '/contact', name: 'contact', component: ContactPageComponent}
+    // { path: '/*', name: 'error', component: ErrorPageComponent}
 ];
 
 const router = new VueRouter ({
@@ -58,10 +17,16 @@ const router = new VueRouter ({
 });
 
 const vm = new Vue ({
-    el: '#app',
+    // el: '#app',
 
     data: {
-        message: "Sup from vue!"   
+        message: "Sup from vue!",
+        authenticated: false, //will be true if authenticated
+
+        mockAccount : { 
+            username: "admin",
+            password: "123"
+        }
     },
 
     created: function(){
@@ -75,15 +40,33 @@ const vm = new Vue ({
 
         logMainMsg(message){
             console.log('called from inside a child, lives in the parent', message);
+        },
+
+        setAuthenticated(status){ //true or false
+            this.authenticated = status;
+        },
+
+        logout(){
+            this.authenticated = false;
         }
     },
 
-    components: { //register components here
-        'HomePageComponent': HomePageComponent, 
-        'UsersPageComponent': UsersPageComponent
-    },
+    // components: { //register components here
+    //     'HomePageComponent': HomePageComponent, 
+    //     'UsersPageComponent': UsersPageComponent
+    // },
 
     router: router
-})
+}).$mount("#app");
 
-})();
+
+//make the router check all the routes and bounce back if we're not authenticated
+router.beforeEach((to, from, next) => { //these are called router guards
+    console.log("router guard fired");
+
+    if(vm.authenticated == false){
+        next("/login");
+    }else{
+        next();
+    }
+});
