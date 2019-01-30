@@ -15,10 +15,9 @@
     <main>
         <div id="app">
             <nav>
-                <ul>
-                    <li><a href="#/">Home</a></li>
-                    <li><a href="#/users">Users</a></li>
-                    <li><a href="#/contact">Contact</a></li>
+                    <router-link :to="{ path: '/'}" class="link">Home</router-link>
+                    <router-link :to="{ path: '/users'}">Users</router-link>
+                    <a href="#/contact">Contact</a>
                 </ul>
                 <!--<router-link :to="{ path: '/'}" class="link">Home</router-link>
                         here's another way to do the routing-->
@@ -31,6 +30,16 @@
         </div>
     </main>
 
+    <!-- templates -->
+    <template id="userList">
+        <div>
+            <h3>Current User:
+                <span v-if="users.length > 0">
+                    {{users[0].first_name}} {{users[0].last_name}}
+                </span>
+            </h3>
+        </div>
+    </template>
     <script src="js/main2.js"></script>
 </body>
 </html>
